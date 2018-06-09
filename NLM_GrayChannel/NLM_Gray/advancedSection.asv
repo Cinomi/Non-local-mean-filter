@@ -1,0 +1,119 @@
+%% Some parameters to set - make sure that your code works at image borders!
+patchSize = 5;
+sigma = [20, 5, 10]; % standard deviation (different for each image!)
+h = 0.55; %decay parameter
+windowSize = 9;
+
+%TODO - Read an image (note that we provide you with smaller ones for
+%debug in the subfolder 'debug' int the 'image' folder);
+%Also unless you are feeling adventurous, stick with non-colour
+%images for now.
+%NOTE: for each image, please also read its CORRESPONDING 'clean' or
+%reference image. We will need this later to do some analysis
+%NOTE2: the noise level is different for each image (it is 20, 10, and 5 as
+%indicated in the image file names)
+
+%REPLACE THIS
+imageNoisy = cell(3,1);
+imageNoisy{1}= imread('alleyNoisy_sigma20.png');
+imageNoisy{2}= imread('townNoisy_sigma5.png');
+imageNoisy{3}= imread('treesNoisy_sigma10.png');
+
+imageReference = cell(3,1);
+imageReference{1} = imread('alleyReference.png');
+imageReference{2} = imread('townReference.png');
+imageReference{3} = imread('treesReference.png');
+
+% imageNoisyD=rgb2gray(imageNoisy{2});
+% imageReferenceD=rgb2gray(imageReference{2});
+
+imgNoisy = cell(3,1);
+imgNoisy{1} = rgb2gray(imageNoisy{1});
+imgNoisy{2} = rgb2gray(imageNoisy{2});
+imgNoisy{3} = rgb2gray(imageNoisy{3});
+
+refimg = cell(3,1);
+imgRef{1} = rgb2gray(imageReference{1});
+imgRef{2} = rgb2gray(imageReference{2});
+imgRef{3} = rgb2gray(imageReference{3});
+
+tic;
+%TODO - Implement the non-local means functions
+filtered1 = nonLocalMeans(imgNoisy{1}, sigma(1), h, patchSize, windowSize);
+filtered2 = nonLocalMeans(imgNoisy{2}, sigma(2), h, patchSize, windowSize);
+filtered3 = nonLocalMeans(imgNoisy{3}, sigma(3), h, patchSize, windowSize);
+toc
+
+%% Let's show your results!
+%1st image
+diff_image1 = abs(imgNoisy{1} - filtered1);
+subplot(1,3,1),imshow(imgNoisy{1}),title('Noisy image');
+subplot(1,3,2),imshow(filtered1),title('NK-Means Denoised Image');
+subplot(1,3,3),imshow(diff_image1),title('Difference');
+
+%Print some statistics ((Peak) Signal-To-Noise Ratio)
+disp('For 1st image')
+disp('For Noisy Input');
+[peakSNR, SNR] = psnr(imgNoisy{1}, imgRef{1});
+disp(['SNR: ', num2str(SNR, 10), '; PSNR: ', num2str(peakSNR, 10)]);
+
+disp('For Denoised Result');
+[peakSNR, SNR] = psnr(filtered1, imgRef{1});
+disp(['SNR: ', num2str(SNR, 10), '; PSNR: ', num2str(peakSNR, 10)]);
+
+
+%2nd image
+figure;
+diff_image2 = abs(imgNoisy{2} - filtered2);
+subplot(1,3,1),imshow(imgNoisy{2}),title('Noisy image');
+subplot(1,3,2),imshow(filtered2),title('NK-Means Denoised Image');
+subplot(1,3,3),imshow(diff_image2),title('Difference');
+
+%Print some statistics ((Peak) Signal-To-Noise Ratio)
+disp('For 2nd image')
+disp('For Noisy Input');
+[peakSNR, SNR] = psnr(imgNoisy{2}, imgRef{2});
+disp(['SNR: ', num2str(SNR, 10), '; PSNR: ', num2str(peakSNR, 10)]);
+
+disp('For Denoised Result');
+[peakSNR, SNR] = psnr(filtered2, imgRef{2});
+disp(['SNR: ', num2str(SNR, 10), '; PSNR: ', num2str(peakSNR, 10)]);
+
+
+%2nd image
+figure;
+diff_image3 = abs(imgNoisy{3} - filtered3);
+subplot(1,3,1),imshow(imgNoisy{3}),title('Noisy image');
+subplot(1,3,2),imshow(filtered3),title('NK-Means Denoised Image');
+subplot(1,3,3),imshow(diff_image3),title('Difference');
+
+%Print some statistics ((Peak) Signal-To-Noise Ratio)
+disp('For 2nd image')
+disp('For Noisy Input');
+[peakSNR, SNR] = psnr(imgNoisy{}, imgRef{2});
+disp(['SNR: ', num2str(SNR, 10), '; PSNR: ', num2str(peakSNR, 10)]);
+
+disp('For Denoised Result');
+[peakSNR, SNR] = psnr(filtered2, imgRef{2});
+disp(['SNR: ', num2str(SNR, 10), '; PSNR: ', num2str(peakSNR, 10)]);
+
+% %Show the denoised image
+% figure('name', 'NL-Means Denoised Image');
+% imshow(filtered1);
+% 
+% %Show difference image
+% diff_image = abs(imgNoisy{1} - filtered1);
+% figure('name', 'Difference Image');
+% imshow(diff_image);
+% 
+% %Print some statistics ((Peak) Signal-To-Noise Ratio)
+% disp('For Noisy Input');
+% [peakSNR, SNR] = psnr(imgNoisy{1}, imgRef{1});
+% disp(['SNR: ', num2str(SNR, 10), '; PSNR: ', num2str(peakSNR, 10)]);
+% 
+% disp('For Denoised Result');
+% [peakSNR, SNR] = psnr(filtered1, imgRef{1});
+% disp(['SNR: ', num2str(SNR, 10), '; PSNR: ', num2str(peakSNR, 10)]);
+% 
+% %Feel free (if you like only :)) to use some other metrics (Root
+% %Mean-Square Error (RMSE), Structural Similarity Index (SSI) etc.)

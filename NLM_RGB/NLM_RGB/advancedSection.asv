@@ -1,0 +1,56 @@
+%% Some parameters to set - make sure that your code works at image borders!
+patchSize = 5;
+sigma = [20, 5, 10]; % standard deviation (different for each image!)
+h = 0.55; %decay parameter
+windowSize = 7;
+
+%TODO - Read an image (note that we provide you with smaller ones for
+%debug in the subfolder 'debug' int the 'image' folder);
+%Also unless you are feeling adventurous, stick with non-colour
+%images for now.
+%NOTE: for each image, please also read its CORRESPONDING 'clean' or
+%reference image. We will need this later to do some analysis
+%NOTE2: the noise level is different for each image (it is 20, 10, and 5 as
+%indicated in the image file names)
+
+%REPLACE THIS
+imageNoisy = cell(3,1);
+imageNoisy{1}= imread('alleyNoisy_sigma20.png');
+imageNoisy{2}= imread('townNoisy_sigma5.png');
+imageNoisy{3}= imread('treesNoisy_sigma10.png');
+
+imageReference = cell(3,1);
+imageReference{1} = imread('alleyReference.png');
+imageReference{2} = imread('townReference.png');
+imageReference{3} = imread('treesReference.png');
+
+tic;
+%TODO - Implement the non-local means functions
+filtered1 = nonLocalMeans(imageNoisy{1}, sigma(1), h, patchSize, windowSize);
+%filtered2 = nonLocalMeans(imageNoisy{2}, sigma(2), h, patchSize, windowSize);
+%filtered3 = nonLocalMeans(imageNoisy{3}, sigma(3), h, patchSize, windowSize);
+toc
+
+%% Let's show your results!
+
+%Show the denoised image
+figure('name', 'NL-Means Denoised Image');
+subplot(1,2,1),imshow(imageNoisy{1});
+subplot(1,2,2),imshow(filtered1);
+
+%Show difference image
+diff_image = abs(double(imageNoisy{1}) - double(filtered1));
+figure('name', 'Difference Image');
+imshow(diff_image ./ max(max((diff_image))));
+
+%Print some statistics ((Peak) Signal-To-Noise Ratio)
+disp('For Noisy Input');
+[peakSNR, SNR] = psnr(imageNoisy{1}, imageReference{1});
+disp(['SNR: ', num2str(SNR, 10), '; PSNR: ', num2str(peakSNR, 10)]);
+
+disp('For Denoised Result');
+[peakSNR, SNR] = psnr(filtered1, imageReference{1});
+disp(['SNR: ', num2str(SNR, 10), '; PSNR: ', num2str(peakSNR, 10)]);
+
+%Feel free (if you like only :)) to use some other metrics (Root
+%Mean-Square Error (RMSE), Structural Similarity Index (SSI) etc.)
